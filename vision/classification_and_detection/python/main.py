@@ -246,8 +246,11 @@ def get_backend(backend):
         from backend_pytorch_native import BackendPytorchNative
         backend = BackendPytorchNative()      
     elif backend == "tflite":
-        from backend_tflite import BackendTflite
+         from backend_tflite import BackendTflite
         backend = BackendTflite()
+    elif backend == "tvm":
+        from backend_tvm import BackendTvm
+        backend = BackendTvm()
     else:
         raise ValueError("unknown backend: " + backend)
     return backend
