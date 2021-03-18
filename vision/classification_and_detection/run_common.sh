@@ -18,7 +18,7 @@ device="cpu"
 
 for i in $* ; do
     case $i in
-       tf|onnxruntime|tflite|pytorch) backend=$i; shift;;
+       tf|onnxruntime|tflite|pytorch|tvm) backend=$i; shift;;
        cpu|gpu) device=$i; shift;;
        gpu) device=gpu; shift;;
        resnet50|mobilenet|ssd-mobilenet|ssd-resnet34|ssd-resnet34-tf) model=$i; shift;;
@@ -50,6 +50,15 @@ fi
 if [ $name == "ssd-resnet34-tf" ] ; then
     model_path="$MODEL_DIR/resnet34_tf.22.1.pb"
     profile=ssd-resnet34-tf
+fi
+
+#
+# TVM
+#
+if [ $name == "mobilenet-tvm" ] ; then
+    model_path="$MODEL_DIR/mobilenet_v1_1.0_224_frozen.pb"
+    profile=mobilenet-tvm
+    extra_args="$extra_args --backend tvm"
 fi
 
 #

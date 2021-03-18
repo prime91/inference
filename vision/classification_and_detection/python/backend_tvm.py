@@ -12,6 +12,7 @@ from tvm.contrib import graph_runtime
 # Tensorflow imports
 import tensorflow as tf
 import backend
+import tvm.relay.testing.tf as tf_testing
 
 try:
     tf_compat_v1 = tf.compat.v1
@@ -52,14 +53,17 @@ class BackendTvm(backend.Backend):
         with tf_compat_v1.gfile.GFile(model_path, "rb") as f:
             graph_def = tf_compat_v1.GraphDef()
             graph_def.ParseFromString(f.read())
-            g = tf_compat_v1.import_graph_def(graph_def, name="")
-        self.sess = tf_compat_v1.Session(graph=g)
+            graph = tf.import_graph_def(graph_def, name="")
+            # Call the utility to import the graph definition into default graph.
+            graph_def = tf_testing.ProcessGraphDefParam(graph_def)
+            # Add shapes to the graph.
+            with tf_compat_v1.Session() as sess:
+                 graph_def = tf_testing.AddShapesToGraphDef(sess, "softmax")
 
         # Import the graph to Relay
         # -------------------------
         # Import tensorflow graph definition to relay frontend.
-        shape_dict = {"DecodeJpeg/contents": x.shape}
-        mod, params = relay.frontend.from_tensorflow(graph_def, layout=self.layout, shape=shape_dict)
+        mod, params = relay.frontend.from_tensorflow(graph_def, layout=self.layout, shape=None, outputs=None)
 
         # Relay Build
         # -----------

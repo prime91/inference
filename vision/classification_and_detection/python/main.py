@@ -104,6 +104,14 @@ SUPPORTED_PROFILES = {
         "model-name": "mobilenet",
     },
 
+    "mobilenet-tvm": {
+        "inputs" : "input:0",
+        "dataset": "imagenet_mobilenet",
+        "outputs": "MobilenetV1/Predictions/Reshape_1:0",
+        "backend": "tvm",
+        "model-name": "mobilenet",
+    },
+
     # ssd-mobilenet
     "ssd-mobilenet-tf": {
         "inputs": "image_tensor:0",
@@ -246,7 +254,7 @@ def get_backend(backend):
         from backend_pytorch_native import BackendPytorchNative
         backend = BackendPytorchNative()      
     elif backend == "tflite":
-         from backend_tflite import BackendTflite
+        from backend_tflite import BackendTflite
         backend = BackendTflite()
     elif backend == "tvm":
         from backend_tvm import BackendTvm
